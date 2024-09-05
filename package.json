@@ -1,0 +1,24 @@
+{
+  "name": "weather_app",
+  "version": "1.0.0",
+  "description": "app uses crossing weather api ",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack serve --mode development",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andrew Amin",
+  "license": "MIT",
+  "devDependencies": {
+    "css-loader": "^7.1.2",
+    "date-fns": "^3.6.0",
+    "html-webpack-plugin": "^5.6.0",
+    "prompt-sync": "^4.2.0",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0"
+  },
+  "type": "module"
+}
