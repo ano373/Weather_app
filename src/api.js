@@ -1,16 +1,23 @@
 import promptSync from "prompt-sync";
-import { format } from "date-fns";
-const APIKEY = "NXSNKU7CCWPWNFRVP42GFX2E5";
+import { format, addWeeks } from "date-fns";
 const prompt = promptSync();
 
-const today = format(new Date(), "yyyy-MM-dd");
+function apiRequest(city, unitGroup) {
+  const APIKEY = "NXSNKU7CCWPWNFRVP42GFX2E5";
+  const today = format(new Date(), "yyyy-MM-dd");
+  let nextweek = addWeeks(today, 1);
+  nextweek = format(nextweek, "yyyy-MM-dd");
 
-async function getWeather() {
-  let city = prompt("enter a city name: ");
-  console.log(city);
-  console.log(today);
-  const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${today}?unitGroup=metric&key=${APIKEY}`;
+  const url =
+    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/` +
+    `services/timeline/${city}/${today}/${nextweek}?unitGroup=${unitGroup}&key=${APIKEY}`;
+  return url;
+}
 
+async function apiResponse() {
+  let city = "rome";
+  const unitGroup = "metric";
+  const url = apiRequest(city, unitGroup);
   try {
     const response = await fetch(url);
     if (response.ok) {
@@ -25,13 +32,45 @@ async function getWeather() {
   }
 }
 
-getWeather()
-.then((result) => {
-  const json = result;
-  const day = json.days[0];
-  console.log(json);
-})
-.catch(error =>{
-    console.error('Error:', error);
-});
+async function WeekForcast() {
+  try {
+    const json = await apiResponse();
+    const week = json.days;
+    return week;
+  } catch (error) {
+    console.log("Error: " + error);
+  }
+}
 
+async function todayWeather() {
+  const week = await WeekForcast();
+  const today = week[0];
+  console.log(today);
+  const { temp, humidity, visibility, windspeed, sunrise, sunset, precipprob } = today;
+
+  return { temp, humidity, visibility, windspeed, sunrise, sunset, precipprob };
+}
+
+async function weekWeather() {
+  const week = await WeekForcast();
+
+  const attributes = ["datetime", "temp", "windspeed"];
+
+  const filteredData = week.map((item) => {
+    return attributes.reduce((obj, attr) => {
+      if (item[attr] !== undefined) {
+        obj[attr] = item[attr];
+      }
+      return obj;
+    }, {});
+  });
+  return filteredData;
+}
+
+todayWeather()
+  .then((today) => {
+    
+  })
+  .catch((error) => {
+    console.error("Error fetching weather:", error);
+  });
