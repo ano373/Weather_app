@@ -1,23 +1,38 @@
-import promptSync from "prompt-sync";
 import { format, addWeeks } from "date-fns";
-const prompt = promptSync();
 
-function apiRequest(city, unitGroup) {
-  const APIKEY = "NXSNKU7CCWPWNFRVP42GFX2E5";
-  const today = format(new Date(), "yyyy-MM-dd");
+
+const input = document.querySelector('#searchbar');
+
+function urlParameters(APIKEY, city, unitGroup) {
+  this.APIKEY = APIKEY;
+  this.city = city;
+  this.unitGroup = unitGroup;
+}
+
+function dateHandle() {
+  let today = format(new Date(), "yyyy-MM-dd");
   let nextweek = addWeeks(today, 1);
   nextweek = format(nextweek, "yyyy-MM-dd");
+  return { today, nextweek };
+}
+
+
+function constructURL(city,unitGroup) {
+  const params = new urlParameters(
+    "NXSNKU7CCWPWNFRVP42GFX2E5",
+    city,
+    unitGroup
+  );
+  const date = dateHandle();
 
   const url =
     `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/` +
-    `services/timeline/${city}/${today}/${nextweek}?unitGroup=${unitGroup}&key=${APIKEY}`;
+    `services/timeline/${params.city}/${date.today}/${date.nextweek}`+
+    `?unitGroup=${params.unitGroup}&key=${params.APIKEY}`;
   return url;
 }
 
-async function apiResponse() {
-  let city = "rome";
-  const unitGroup = "metric";
-  const url = apiRequest(city, unitGroup);
+async function apiResponse(url) {
   try {
     const response = await fetch(url);
     if (response.ok) {
@@ -32,45 +47,8 @@ async function apiResponse() {
   }
 }
 
-async function WeekForcast() {
-  try {
-    const json = await apiResponse();
-    const week = json.days;
-    return week;
-  } catch (error) {
-    console.log("Error: " + error);
-  }
-}
 
-async function todayWeather() {
-  const week = await WeekForcast();
-  const today = week[0];
-  console.log(today);
-  const { temp, humidity, visibility, windspeed, sunrise, sunset, precipprob } = today;
 
-  return { temp, humidity, visibility, windspeed, sunrise, sunset, precipprob };
-}
 
-async function weekWeather() {
-  const week = await WeekForcast();
 
-  const attributes = ["datetime", "temp", "windspeed"];
-
-  const filteredData = week.map((item) => {
-    return attributes.reduce((obj, attr) => {
-      if (item[attr] !== undefined) {
-        obj[attr] = item[attr];
-      }
-      return obj;
-    }, {});
-  });
-  return filteredData;
-}
-
-todayWeather()
-  .then((today) => {
-    
-  })
-  .catch((error) => {
-    console.error("Error fetching weather:", error);
-  });
+export { constructURL, apiResponse };
