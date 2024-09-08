@@ -6,20 +6,22 @@
     <title>Document</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
+
   <body>
     <div class="navbar">
       <div>
-        <img id="logo">
+        <img id="logo" />
       </div>
-      <input id="searchbar" />
+      <form id="searchForm">
+        <input type="text" id="searchbar" placeholder="Search..." />
+        <button type="submit">Search</button>
+      </form>
       <div>
-        <button>&deg;C, m/s</button>
-        <button>&deg;F, mph</button>
+        <button id ='celsiusButton'>&deg;C, m/s</button>
+        <button id ='fahrenheitButton'>&deg;F, mph</button>
       </div>
     </div>
     <div class="day_card"></div>
     <div class="weekly_forcast"></div>
-
-    <script src="./script.js"></script>
   </body>
 </html>
